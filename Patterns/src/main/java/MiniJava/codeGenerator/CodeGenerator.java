@@ -2,6 +2,7 @@ package MiniJava.codeGenerator;
 
 import MiniJava.Log.Log;
 import MiniJava.errorHandler.ErrorHandler;
+import MiniJava.facade.MemoryFacade;
 import MiniJava.scanner.token.Token;
 import MiniJava.semantic.symbol.Symbol;
 import MiniJava.semantic.symbol.SymbolTable;
@@ -13,7 +14,7 @@ import java.util.Stack;
  * Created by Alireza on 6/27/2015.
  */
 public class CodeGenerator {
-    private Memory memory = new Memory();
+    private MemoryFacade memory = new MemoryFacade();
     private Stack<Address> ss = new Stack<Address>();
     private Stack<String> symbolStack = new Stack<>();
     private Stack<String> callStack = new Stack<>();
@@ -137,7 +138,13 @@ public class CodeGenerator {
 
     private void defMain() {
         //ss.pop();
-        memory.add3AddressCode(ss.pop().num, Operation.JP, new Address(memory.getCurrentCodeBlockAddress(), varType.Address), null, null);
+        memory.add3AddressCode(
+                ss.pop().num,
+                Operation.JP,
+                new Address(memory.getCurrentCodeBlockAddress(), varType.Address),
+                null,
+                null
+        );
         String methodName = "main";
         String className = symbolStack.pop();
 
