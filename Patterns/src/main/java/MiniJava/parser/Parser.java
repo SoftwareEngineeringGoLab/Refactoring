@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import MiniJava.Log.Log;
-import MiniJava.codeGenerator.CodeGenerator;
 import MiniJava.errorHandler.ErrorHandler;
+import MiniJava.facade.CodeGeneratorFacade;
 import MiniJava.scanner.lexicalAnalyzer;
 import MiniJava.scanner.token.Token;
 
@@ -17,7 +17,7 @@ public class Parser {
     private Stack<Integer> parsStack;
     private ParseTable parseTable;
     private lexicalAnalyzer lexicalAnalyzer;
-    private CodeGenerator cg;
+    private CodeGeneratorFacade cg;
 
     public Parser() {
         parsStack = new Stack<Integer>();
@@ -35,7 +35,7 @@ public class Parser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        cg = new CodeGenerator();
+        cg = new CodeGeneratorFacade();
     }
 
     public void startParse(java.util.Scanner sc) {
