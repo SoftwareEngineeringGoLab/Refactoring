@@ -17,7 +17,6 @@ public class Shift extends Action {
         return actionOutput;
     }
 
-
     @Override
     public String toString() {
         return "s " + getNumber();

@@ -71,12 +71,13 @@ public class Parser {
                 ignored.printStackTrace();
             }
         }
-        if (!ErrorHandler.hasError) cg.printMemory();
+        if (!ErrorHandler.hasError)
+            cg.printMemory();
     }
 
     private ActionOutput doNextAction(ActionOutput actionOutput) {
         Action currentAction;
-        Log.print(/*"lookahead : "+*/ actionOutput.getLookAhead().toString() + "\t" + parsStack.peek());
+        Log.print(/* "lookahead : "+ */ actionOutput.getLookAhead().toString() + "\t" + parsStack.peek());
         currentAction = parseTable.getActionTable(parsStack.peek(), actionOutput.getLookAhead());
         Log.print(currentAction.toString());
 

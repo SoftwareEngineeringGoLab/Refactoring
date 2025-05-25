@@ -23,9 +23,9 @@ public class Reduce extends Action {
         for (int i = 0; i < rule.RHS.size(); i++) {
             parsStack.pop();
         }
-        Log.print(/*"state : " +*/ parsStack.peek() + "\t" + rule.LHS);
+        Log.print(/* "state : " + */ parsStack.peek() + "\t" + rule.LHS);
         parsStack.push(parseTable.getGotoTable(parsStack.peek(), rule.LHS));
-        Log.print(/*"new State : " + */parsStack.peek() + "");
+        Log.print(/* "new State : " + */parsStack.peek() + "");
         try {
             cg.semanticFunction(rule.semanticAction, actionOutput.getLookAhead());
         } catch (Exception e) {

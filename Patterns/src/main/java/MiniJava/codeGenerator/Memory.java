@@ -2,7 +2,6 @@ package MiniJava.codeGenerator;
 
 import java.util.ArrayList;
 
-
 public class Memory {
     private ArrayList<_3AddressCode> codeBlock;
     private int lastTempIndex;
@@ -25,7 +24,6 @@ public class Memory {
     private int getLastDataAddress() {
         return lastDataAddress;
     }
-
 
     private void setLastTempIndex(int lastTempIndex) {
         this.lastTempIndex = lastTempIndex;
@@ -92,14 +90,18 @@ class _3AddressCode {
     }
 
     public String toString() {
-        if (operation == null) return "";
+        if (operation == null)
+            return "";
         StringBuffer res = new StringBuffer("(");
         res.append(operation.toString()).append(",");
-        if (Operand1 != null) res.append(Operand1.toString());
+        if (Operand1 != null)
+            res.append(Operand1.toString());
         res.append(",");
-        if (Operand2 != null) res.append(Operand2.toString());
+        if (Operand2 != null)
+            res.append(Operand2.toString());
         res.append(",");
-        if (Operand3 != null) res.append(Operand3.toString());
+        if (Operand3 != null)
+            res.append(Operand3.toString());
         res.append(")");
 
         return res.toString();

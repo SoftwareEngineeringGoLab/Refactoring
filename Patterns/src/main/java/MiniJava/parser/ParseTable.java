@@ -33,13 +33,15 @@ public class ParseTable {
         ParseTable.updateTerminalsAndNonTerminals(cols, terminals, nonTerminals);
 
         ArrayList<Map<Token, Action>> actionTable = new ArrayList<Map<Token, Action>>();
-        ArrayList<Map<NonTerminal, Integer>>  gotoTable = new ArrayList<Map<NonTerminal, Integer>>();
+        ArrayList<Map<NonTerminal, Integer>> gotoTable = new ArrayList<Map<NonTerminal, Integer>>();
         getSymbolsFromRows(rows, terminals, nonTerminals, actionTable, gotoTable);
 
         return new ParseTable(actionTable, gotoTable);
     }
 
-    private static void getSymbolsFromRows(String[] rows, Map<Integer, Token> terminals, Map<Integer, NonTerminal> nonTerminals, ArrayList<Map<Token, Action>> actionTable, ArrayList<Map<NonTerminal, Integer>> gotoTable) throws Exception {
+    private static void getSymbolsFromRows(String[] rows, Map<Integer, Token> terminals,
+            Map<Integer, NonTerminal> nonTerminals, ArrayList<Map<Token, Action>> actionTable,
+            ArrayList<Map<NonTerminal, Integer>> gotoTable) throws Exception {
         String[] cols;
         for (int i = 1; i < rows.length; i++) {
             rows[i] = rows[i].substring(1, rows[i].length() - 1);
@@ -50,7 +52,9 @@ public class ParseTable {
         }
     }
 
-    private static void getRowSymbolsFromColumns(String[] cols, Map<Integer, Token> terminals, Map<Integer, NonTerminal> nonTerminals, ArrayList<Map<Token, Action>> actionTable, ArrayList<Map<NonTerminal, Integer>> gotoTable) throws Exception {
+    private static void getRowSymbolsFromColumns(String[] cols, Map<Integer, Token> terminals,
+            Map<Integer, NonTerminal> nonTerminals, ArrayList<Map<Token, Action>> actionTable,
+            ArrayList<Map<NonTerminal, Integer>> gotoTable) throws Exception {
         for (int j = 1; j < cols.length; j++) {
             if (!cols[j].equals("")) {
                 if (cols[j].equals("acc")) {
@@ -59,8 +63,10 @@ public class ParseTable {
                     Token t = terminals.get(j);
                     int actionNumber = Integer.parseInt(cols[j].substring(1));
                     Action a;
-                    if (cols[j].charAt(0) == 'r') a = new Reduce(actionNumber);
-                    else a = new Shift(actionNumber);
+                    if (cols[j].charAt(0) == 'r')
+                        a = new Reduce(actionNumber);
+                    else
+                        a = new Shift(actionNumber);
                     actionTable.get(actionTable.size() - 1).put(t, a);
                 } else if (nonTerminals.containsKey(j)) {
                     gotoTable.get(gotoTable.size() - 1).put(nonTerminals.get(j), Integer.parseInt(cols[j]));
@@ -86,7 +92,8 @@ public class ParseTable {
         return cols;
     }
 
-    private static void updateTerminalsAndNonTerminals(String[] cols, Map<Integer, Token> terminals, Map<Integer, NonTerminal> nonTerminals) {
+    private static void updateTerminalsAndNonTerminals(String[] cols, Map<Integer, Token> terminals,
+            Map<Integer, NonTerminal> nonTerminals) {
         for (int i = 1; i < cols.length; i++) {
             if (cols[i].startsWith("Goto")) {
                 String temp = cols[i].substring(5);
@@ -102,13 +109,13 @@ public class ParseTable {
     }
 
     public int getGotoTable(int currentState, NonTerminal variable) {
-//        try {
+        // try {
         return gotoTable.get(currentState).get(variable);
-//        }catch (NullPointerException dd)
-//        {
-//            dd.printStackTrace();
-//        }
-//        return 0;
+        // }catch (NullPointerException dd)
+        // {
+        // dd.printStackTrace();
+        // }
+        // return 0;
     }
 
     public Action getActionTable(int currentState, Token terminal) {
