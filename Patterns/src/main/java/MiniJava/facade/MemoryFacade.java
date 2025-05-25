@@ -31,8 +31,12 @@ public class MemoryFacade {
         memory.add3AddressCode(i, op, opr1, opr2, opr3);
     }
 
-    public int getTemp() {
-        return memory.getTemp();
+    public int getNewTemp() {
+        return memory.getNewTemp();
+    }
+
+    public void updateLastTempIndex() {
+        memory.updateLastTempIndex();
     }
 
     public int saveMemory() {
