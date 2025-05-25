@@ -63,36 +63,24 @@ public class Parser {
         lexicalAnalyzer = new lexicalAnalyzer(sc);
 
         ActionOutput actionOutput = new ActionOutput(lexicalAnalyzer.getNextToken(), false);
-        Action currentAction;
         while (!actionOutput.isFinish()) {
             try {
-                Log.print(/*"lookahead : "+*/ actionOutput.getLookAhead().toString() + "\t" + parsStack.peek());
-//                Log.print("state : "+ parsStack.peek());
-                currentAction = parseTable.getActionTable(parsStack.peek(), actionOutput.getLookAhead());
-                Log.print(currentAction.toString());
-                //Log.print("");
-
-                actionOutput = currentAction.performAction(this, actionOutput);
-                Log.print("");
+                actionOutput = doNextAction(actionOutput);
             } catch (Exception ignored) {
                 ignored.printStackTrace();
-//                boolean find = false;
-//                for (NonTerminal t : NonTerminal.values()) {
-//                    if (parseTable.getGotoTable(parsStack.peek(), t) != -1) {
-//                        find = true;
-//                        parsStack.push(parseTable.getGotoTable(parsStack.peek(), t));
-//                        StringBuilder tokenFollow = new StringBuilder();
-//                        tokenFollow.append(String.format("|(?<%s>%s)", t.name(), t.pattern));
-//                        Matcher matcher = Pattern.compile(tokenFollow.substring(1)).matcher(lookAhead.toString());
-//                        while (!matcher.find()) {
-//                            lookAhead = lexicalAnalyzer.getNextToken();
-//                        }
-//                    }
-//                }
-//                if (!find)
-//                    parsStack.pop();
             }
         }
         if (!ErrorHandler.hasError) cg.printMemory();
+    }
+
+    private ActionOutput doNextAction(ActionOutput actionOutput) {
+        Action currentAction;
+        Log.print(/*"lookahead : "+*/ actionOutput.getLookAhead().toString() + "\t" + parsStack.peek());
+        currentAction = parseTable.getActionTable(parsStack.peek(), actionOutput.getLookAhead());
+        Log.print(currentAction.toString());
+
+        actionOutput = currentAction.performAction(this, actionOutput);
+        Log.print("");
+        return actionOutput;
     }
 }
