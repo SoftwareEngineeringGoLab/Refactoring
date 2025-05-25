@@ -19,13 +19,74 @@ public class ParseTable {
     private ArrayList<Map<Token, Action>> actionTable;
     private ArrayList<Map<NonTerminal, Integer>> gotoTable;
 
-    public ParseTable(String jsonTable) throws Exception {
-        jsonTable = jsonTable.substring(2, jsonTable.length() - 2);
-        String[] Rows = jsonTable.split("\\],\\[");
+    private ParseTable(ArrayList<Map<Token, Action>> actionTable, ArrayList<Map<NonTerminal, Integer>> gotoTable) {
+        this.actionTable = actionTable;
+        this.gotoTable = gotoTable;
+    }
+
+    public static ParseTable createParseTable(String jsonTable) throws Exception {
+        String[] rows = ParseTable.getRows(jsonTable);
+        String[] cols = ParseTable.getFirstCols(rows);
+
         Map<Integer, Token> terminals = new HashMap<Integer, Token>();
         Map<Integer, NonTerminal> nonTerminals = new HashMap<Integer, NonTerminal>();
-        Rows[0] = Rows[0].substring(1, Rows[0].length() - 1);
-        String[] cols = Rows[0].split("\",\"");
+        ParseTable.updateTerminalsAndNonTerminals(cols, terminals, nonTerminals);
+
+        ArrayList<Map<Token, Action>> actionTable = new ArrayList<Map<Token, Action>>();
+        ArrayList<Map<NonTerminal, Integer>>  gotoTable = new ArrayList<Map<NonTerminal, Integer>>();
+        getSymbolsFromRows(rows, terminals, nonTerminals, actionTable, gotoTable);
+
+        return new ParseTable(actionTable, gotoTable);
+    }
+
+    private static void getSymbolsFromRows(String[] rows, Map<Integer, Token> terminals, Map<Integer, NonTerminal> nonTerminals, ArrayList<Map<Token, Action>> actionTable, ArrayList<Map<NonTerminal, Integer>> gotoTable) throws Exception {
+        String[] cols;
+        for (int i = 1; i < rows.length; i++) {
+            rows[i] = rows[i].substring(1, rows[i].length() - 1);
+            cols = rows[i].split("\",\"");
+            actionTable.add(new HashMap<Token, Action>());
+            gotoTable.add(new HashMap<>());
+            getRowSymbolsFromColumns(cols, terminals, nonTerminals, actionTable, gotoTable);
+        }
+    }
+
+    private static void getRowSymbolsFromColumns(String[] cols, Map<Integer, Token> terminals, Map<Integer, NonTerminal> nonTerminals, ArrayList<Map<Token, Action>> actionTable, ArrayList<Map<NonTerminal, Integer>> gotoTable) throws Exception {
+        for (int j = 1; j < cols.length; j++) {
+            if (!cols[j].equals("")) {
+                if (cols[j].equals("acc")) {
+                    actionTable.get(actionTable.size() - 1).put(terminals.get(j), new Accept());
+                } else if (terminals.containsKey(j)) {
+                    Token t = terminals.get(j);
+                    int actionNumber = Integer.parseInt(cols[j].substring(1));
+                    Action a;
+                    if (cols[j].charAt(0) == 'r') a = new Reduce(actionNumber);
+                    else a = new Shift(actionNumber);
+                    actionTable.get(actionTable.size() - 1).put(t, a);
+                } else if (nonTerminals.containsKey(j)) {
+                    gotoTable.get(gotoTable.size() - 1).put(nonTerminals.get(j), Integer.parseInt(cols[j]));
+                } else {
+                    throw new Exception();
+                }
+            }
+        }
+    }
+
+    private static String[] getRows(String jsonTable) {
+        jsonTable = jsonTable.substring(2, jsonTable.length() - 2);
+        String[] rows = jsonTable.split("\\],\\[");
+        rows[0] = rows[0].substring(1, rows[0].length() - 1);
+        return rows;
+    }
+
+    private static String[] getFirstCols(String[] rows) {
+        String[] cols = rows[0].split("\",\"");
+        for (int i = 0; i < cols.length; i++) {
+            cols[i] = cols[i].replaceAll("\"", "");
+        }
+        return cols;
+    }
+
+    private static void updateTerminalsAndNonTerminals(String[] cols, Map<Integer, Token> terminals, Map<Integer, NonTerminal> nonTerminals) {
         for (int i = 1; i < cols.length; i++) {
             if (cols[i].startsWith("Goto")) {
                 String temp = cols[i].substring(5);
@@ -36,40 +97,6 @@ public class ParseTable {
                 }
             } else {
                 terminals.put(i, new Token(Token.getTyepFormString(cols[i]), cols[i]));
-            }
-        }
-        actionTable = new ArrayList<Map<Token, Action>>();
-        gotoTable = new ArrayList<Map<NonTerminal, Integer>>();
-        for (int i = 1; i < Rows.length; i++) {
-            if (i == 100) {
-                int a = 1;
-                a++;
-            }
-            Rows[i] = Rows[i].substring(1, Rows[i].length() - 1);
-            cols = Rows[i].split("\",\"");
-            actionTable.add(new HashMap<Token, Action>());
-            gotoTable.add(new HashMap<>());
-            for (int j = 1; j < cols.length; j++) {
-                if (!cols[j].equals("")) {
-                    if (cols[j].equals("acc")) {
-                        actionTable.get(actionTable.size() - 1).put(terminals.get(j), new Accept());
-                    } else if (terminals.containsKey(j)) {
-//                        try {
-                        Token t = terminals.get(j);
-                        int actionNumber = Integer.parseInt(cols[j].substring(1));
-                        Action a;
-                        if (cols[j].charAt(0) == 'r') a = new Reduce(actionNumber);
-                        else a = new Shift(actionNumber);
-                        actionTable.get(actionTable.size() - 1).put(t, a);
-//                        }catch (StringIndexOutOfBoundsException e){
-//                            e.printStackTrace();
-//                        }
-                    } else if (nonTerminals.containsKey(j)) {
-                        gotoTable.get(gotoTable.size() - 1).put(nonTerminals.get(j), Integer.parseInt(cols[j]));
-                    } else {
-                        throw new Exception();
-                    }
-                }
             }
         }
     }

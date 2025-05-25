@@ -24,7 +24,8 @@ public class Parser {
         parsStack = new Stack<Integer>();
         parsStack.push(0);
         try {
-            parseTable = new ParseTable(Files.readAllLines(Paths.get("src/main/resources/parseTable")).get(0));
+            String jsonTable = Files.readAllLines(Paths.get("src/main/resources/parseTable")).get(0);
+            parseTable = ParseTable.createParseTable(jsonTable);
         } catch (Exception e) {
             e.printStackTrace();
         }
